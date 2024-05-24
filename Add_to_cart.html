@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/font.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-ExzXU86Ofp0KQLeLHznOQoWITWDyGbN2/R2m2P4wD4UMwfjwJ7FQVVPn3+8xVX+JH7CBbiDWG4N3sINyyU5e4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+   
+</head>
+
+<body>
+    <div class="header">
+        <div class="cart-icon" onclick="redirectToCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <div class="cart-counter" id="cartCounter">0</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 " style="padding-top: 500px; color: black;">
+                <div class="card custom-card" style="background-color: black; color: white;">
+                    <div class="card-body">
+                        <form action="#" method="post">
+                            <div class="form-group">
+                                <label>Name:</label>
+                                <input type="text" id="name" class="form-control">
+                                <p id="nameerror"></p>
+                            </div>
+                            <div class="form-group">
+                                <label>price</label>
+                                <input type="text" id="price" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>color</label>
+                                <input type="text" id="color" class="form-control">
+                            </div>
+                            <button onclick="addProduct()" class="btn btn-dark">Add Product</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="row">
+            <div class="col-md-12" style="margin-right: 20px;">
+                <div class="row" id="cardcontainer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        let arr = JSON.parse(localStorage.getItem("product")) || [];
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        
+        function addProduct() {
+            let name = document.getElementById("name").value;
+            let price = document.getElementById("price").value;
+            let color = document.getElementById("color").value;
+
+            if (name === "" && price === "" && color === "") {
+                document.getElementById("nameerror").innerHTML = "Please enter all the details of the product";
+                nameerror.style.color = "red";
+            }
+
+            let data = {
+                name,
+                price,
+                color
+            };
+
+            arr.push(data);
+            localStorage.setItem("product", JSON.stringify(arr));
+            location.reload();
+        }
+
+        function redirectToCart() {
+            window.location.href = "cart.html";
+        }
+
+        function ProductData() {
+            let cardcontainer = document.getElementById("cardcontainer");
+
+            arr.map((val, index) => {
+                let card = document.createElement("div");
+                card.style = "width:18rem";
+
+                card.innerHTML = `
+                    <div class="card" style="width: 350px; margin-left: -100    px;margin-top: 47px;">
+                        <img src="img/1-m00-52-35-cpgm7wuuomgatw8uaauvq6fkx88826 (1).jpg" class="card-img-top" alt="Product Image"  style="width: 180px; margin: 0 auto; margin-top:15px;">
+                        <div class="card-body" style="width: 350px;">
+                            <p class="card-title" style="font-size:18px;padding-left: 15px; padding-bottom:0">Name: ${val.name}</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" style="border-bottom:none; font-size:18px; padding-bottom: 0; padding-top: 0" >Price: ${val.price}</li>
+                                <li class="list-group-item" style="font-size:20px; padding-bottom:20px;">Color: ${val.color}</li>
+                            </ul>
+                            
+                            <div class="d-flex justify-content-between"> 
+                                <button class="btn btn-primary btn-sm mr-2" onclick="add(${index})" style="padding:10px;">ADD</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteProduct(${index})" style="padding:10px; margin-left:10px">DELETE</button>
+                                <button type="button" class="btn btn-success"  onclick="viewdata(${index})" style="padding:10px; margin-left:10px">EDIT</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cardcontainer.appendChild(card);
+            });
+        }
+        ProductData();
+
+        function add(index) {
+            let additem = arr[index];
+            cart.push(additem);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Item added Successfully!!");
+            updateCartCounter(); 
+            
+        }
+
+        function updateCartCounter() {
+            let cartCounter = document.getElementById("cartCounter");
+            let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+            cartCounter.textContent = cartItems.length;
+        }
+
+        updateCartCounter();
+
+        function deleteProduct(index) {
+            arr.splice(index, 1);
+            localStorage.setItem("product", JSON.stringify(arr));
+            location.reload();
+        }
+
+        function viewdata(index) {
+            let data = arr[index];
+            let modalId = `exampleModal${index}`;
+
+            arr.map((val, index) => {
+                let editproduct = document.createElement("div");
+                editproduct.innerHTML = `
+                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header"> 
+                                    <h5 style="color: blue;">UPDATE HERE :)</h5>
+                                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="updateForm">
+                                        <div class="form-group">
+                                            <label for="updateName">Name:</label>
+                                            <input type="text" class="form-control" id="updateName" value="${data.name}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="updatePrice">Price:</label>
+                                            <input type="text" class="form-control" id="updatePrice" value="${data.price}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="updateColor">Color:</label>
+                                            <input type="text" class="form-control" id="updateColor" value="${data.color}">
+                                        </div>
+                                    </form>
+                                </div>  
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" onclick="updateProduct(${index})">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(editproduct);
+                $(`#${modalId}`).modal('show');
+            });
+        };
+
+        function updateProduct(index) {
+            let updateName = document.getElementById("updateName").value;
+            let updatePrice = document.getElementById("updatePrice").value;
+            let updateColor = document.getElementById("updateColor").value;
+
+            let data = {
+                name: updateName,
+                price: updatePrice,
+                color: updateColor
+            };
+
+            arr.splice(index, 1, data)
+            localStorage.setItem("product", JSON.stringify(arr));
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>
